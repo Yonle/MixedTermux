@@ -16,3 +16,7 @@ export ALPINEPROOT_PROOT_OPTIONS=" -b \$(pwd) -b /data -b /sdcard -b /storage"
 EOF
 
 sed -i "s/command-not-found \"\$1\"/command-not-found \"\$\@\"/g" /data/data/com.termux/files/usr/etc/bash.bashrc
+
+if [ -r /data/data/com.termux/files/usr/share/fish/functions/fish_command_not_found.fish ]; then
+	sed -i "s/\$argv\[1\]/\"\$argv\"/g" /data/data/com.termux/files/usr/share/fish/functions/fish_command_not_found.fish
+fi

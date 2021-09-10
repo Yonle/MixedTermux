@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/sh
 
-if ! [ -d $HOME/alpine-proot ]; then
+if ! [ -e $HOME/alpine-proot/main.sh ]; then
 	mkdir -p $HOME/alpine-proot
 	curl -sLo $HOME/alpine-proot/main.sh git.io/alpine-proot
 	chmod +x $HOME/alpine-proot/main.sh

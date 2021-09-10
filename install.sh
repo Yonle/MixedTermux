@@ -15,3 +15,4 @@ export ALPINEPROOT_PROOT_OPTIONS=" -b \$(pwd)"
 /data/data/com.termux/files/home/alpine-proot/main.sh -c "cd \$(pwd) && \$@"
 EOF
 
+sed -i "s/command-not-found \"\$1\"/command-not-found \"\$\@\"/g" /data/data/com.termux/files/usr/etc/bash.bashrc

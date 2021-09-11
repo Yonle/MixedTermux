@@ -1,0 +1,87 @@
+#!/data/data/com.termux/files/usr/bin/env bash
+set -euo pipefail
+# modified command-not-found to run commands through the container
+# proot distributions
+
+# catch command argument
+CNF_CMD="${@}"
+
+# check if CNF_DISABLE is set
+if [ -n "${CNF_DISABLE:-}" ]; then
+	echo "$(echo ${CNF_CMD} | awk '{print $1}'): command not found"
+	exit 127
+fi
+
+# unset LD_PRELOAD to allow fake execution in /usr 
+# and redirects it through guest
+unset LD_PRELOAD
+
+# check for proot-distro. we use it as an execution engine
+if ! command -v proot-distro > /dev/null 2>&1; then
+	echo "[!] proot-distro is required for execution engine!"
+	exit 2
+fi
+
+# check CNF_OS_TYPE variable
+if [ -z "${CNF_OS_TYPE:-}" ]; then
+	CNF_OS_TYPE=default
+fi
+
+# check OS
+	case "${CNF_OS_TYPE}" in
+		default|*lpine*)
+			PD_DISTRO="alpine"
+			;;
+		*bian)
+			# PD_DISTRO=lesbian
+			PD_DISTRO="debian"
+			;;
+		*buntu)
+			# PD_DISTRO=ooobooon2
+			PD_DISTRO="ubuntu"
+			;;
+		void*|Void*)
+			PD_DISTRO="void"
+			;;
+		*edora)
+			PD_DISTRO="fedora"
+			;;
+		*Arch*|*arch*)
+			PD_DISTRO="archlinux"
+			;;
+		Opensus*|opensus*)
+			PD_DISTRO="opensuse"
+			;;
+		*)
+			echo "[!] Unknown OS Type"
+			exit 2
+			;;
+	esac
+
+# check if triggering uninstall
+if [ -n "${CNF_UNINSTALL:-}" ]; then
+	proot-distro remove "${PD_DISTRO}"
+	exit
+fi
+
+ROOT_DIR="${PREFIX}/var/lib/proot-distro/installed-rootfs/${PD_DISTRO}"
+
+# check its' rootfs existence
+if [ ! -d "${ROOT_DIR}" ]; then
+	proot-distro install "${PD_DISTRO}"
+	# link2symlink often makes .l2s junk in home directory
+	# create the .l2s directory if possible
+	mkdir -p "${ROOT_DIR}/.l2s"
+fi
+
+# create .l2s as a practice for not having garbage .l2s files
+mkdir -p "${ROOT_DIR}/.l2s"
+
+# launch container environment
+CNF+="login"
+CNF+=" ${PD_DISTRO}"
+CNF+=" --termux-home"
+CNF+=" --shared-tmp"
+
+eval "proot-distro ${CNF} -- ${CNF_CMD}"
+

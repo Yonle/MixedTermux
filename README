@@ -9,3 +9,17 @@ You may mix your termux instantly by doing this:
   curl -sL git.io/mixedtermux | sh
 
 After installation, It does not print any output. This is NORMAL. After doing that, You may do `apk update`. Enjoy
+
+Uninstalling
+============
+Uninstalling step is very easy. Just do this:
+
+  pkg reinstall command-not-found bash termux-tools
+
+Community
+=========
+ • Discord: https://discord.gg/9S3ZCDR
+ • Telegram: https://t.me/yonlecoder
+ • Guilded: https://guilded.gg/yonlecoder
+ • Mastodon: https://mastodon.social/web/accounts/106912324893016152
+ • Twitter: @yonlecoder

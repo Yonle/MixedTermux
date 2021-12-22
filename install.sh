@@ -1,22 +1,38 @@
-#!/data/data/com.termux/files/usr/bin/sh
+#!/usr/bin/env sh
 
-if ! [ -e $HOME/alpine-proot/main.sh ]; then
-	mkdir -p $HOME/alpine-proot
-	curl -sLo $HOME/alpine-proot/main.sh git.io/alpine-proot
-	chmod +x $HOME/alpine-proot/main.sh
-fi
+! [ -x ~/.mixedtermuxrc ] && cat <<- EOF > ~/.mixedtermuxrc
+# https://github.com/Yonle/MixedTermux
+# This is a sample MixedTermux configuration file.
+# This configuration file is Bash script. You can put some bash script here.
 
-cat <<- EOF > /data/data/com.termux/files/usr/libexec/termux/command-not-found
-#!/data/data/com.termux/files/usr/bin/env sh
+# Distribution / Distro alias
+# To view the available distro, Check "proot-distro list" command
+DISTRO=alpine
 
-export ALPINEPROOT_BIND_TMPDIR=1
-export ALPINEPROOT_PROOT_OPTIONS=" -b \$(pwd) -b /data -b /sdcard -b /storage"
+# User to execute as
+USER=root
 
-/data/data/com.termux/files/home/alpine-proot/main.sh -c "cd \$(pwd) && \$@"
+# Additional Proot-distro login args. Each flag is separated with space.
+# See "proot-distro login --help" to see proot-distro login arguments
+# ADDITIONAL_ARGS="--no-kill-on-exit --no-sysvipc"
 EOF
 
-sed -i "s/command-not-found \"\$1\"/command-not-found \"\$\@\"/g" /data/data/com.termux/files/usr/etc/bash.bashrc
+cat <<- EOF > $PREFIX/libexec/termux/command-not-found
+#!$PREFIX/bin/env bash
 
-if [ -r /data/data/com.termux/files/usr/share/fish/functions/fish_command_not_found.fish ]; then
-	sed -i "s/\$argv\[1\]/\"\$argv\"/g" /data/data/com.termux/files/usr/share/fish/functions/fish_command_not_found.fish
-fi
+[ -x ~/.mixedtermuxrc ] && source ~/.mixedtermuxrc
+! command -v proot-distro > /dev/null && pkg install -y proot-distro
+! [ -d $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"} ] && ! [ -z "\$(ls -A $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"})" ] && proot-distro install \${DISTRO:-"alpine"}
+
+ARGS=("proot-distro login \${DISTRO:-alpine}")
+ARGS+=("--termux-home --shared-tmp --fix-low-ports")
+! [ -z \$ADDITIONAL_ARGS ] && ARGS+=("\$ADDITIONAL_ARGS")
+[ -S $(echo $TMPDIR/pulse-*/native) ] && ARGS+=("--bind $(echo $TMPDIR/pulse-*/native):/var/run/pulse/native")
+ARGS+=("--user \${USER:-"root"} --") 
+
+exec \${ARGS[@]} \$*
+EOF
+
+sed -i "s/command-not-found \"\$1\"/command-not-found \$\*/g" $PREFIX/etc/bash.bashrc
+
+[ -r $PREFIX/share/fish/functions/fish_command_not_found.fish ] && sed -i "s/\$argv\[1\]/\"\$argv\[\@\]\"/g" $PREFIX/share/fish/functions/fish_command_not_found.fish

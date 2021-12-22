@@ -1,6 +1,6 @@
 MixedTermux
 ===========
-A script that mixing your termux with some alpine command. Ya you don't say?
+A script that mixing your termux with some command from one of your distros. Using proot-distro in order to work
 
 Installing
 ==========
@@ -9,6 +9,24 @@ You may mix your termux instantly by doing this:
   curl -sL git.io/mixedtermux | sh
 
 After installation, It does not print any output. This is NORMAL. After doing that, You may do `apk update`. Enjoy
+
+Configuration
+=============
+See ~/.mixedtermuxrc file
+
+Sound Support
+=============
+Start pulseaudio by executing this command
+
+  pulseaudio --start --exit-idle-time=-1
+
+Pulseaudio is known to be Battery intensive, So you should kill it often after finishing using pulseaudio
+
+  pulseaudio --kill
+
+Or, if you want to start pulseaudio so it has sound support everytime you execute some command, You may execute this command (Note: Execute once. Twice will cause fatal problem):
+
+  echo "! pulseaudio --check && pulseaudio --start --exit-idle-time=-1" >> ~/.mixedtermuxrc
 
 Uninstalling
 ============

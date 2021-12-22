@@ -14,20 +14,32 @@ USER=root
 
 # Additional Proot-distro login args. Each flag is separated with space.
 # See "proot-distro login --help" to see proot-distro login arguments
+
 # ADDITIONAL_ARGS="--no-kill-on-exit --no-sysvipc"
 EOF
 
 cat <<- EOF > $PREFIX/libexec/termux/command-not-found
 #!$PREFIX/bin/env bash
 
+DISTRO_PATH=$PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"}
+
 [ -f ~/.mixedtermuxrc ] && source ~/.mixedtermuxrc
 ! command -v proot-distro > /dev/null && pkg install -y proot-distro
-! [ -d $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"} ] && ! [ -z "\$(ls -A $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"})" ] && proot-distro install \${DISTRO:-"alpine"}
+! [ -d \$DISTRO_PATH ] && ! [ -z "\$(ls -A \$DISTRO_PATH)" ] && proot-distro install \${DISTRO:-"alpine"}
+
+cat <<- END > \$DISTRO_PATH/etc/profile.d/mixedtermux.sh
+#!/usr/bin/env sh
+
+cd \$(pwd)
+rm /etc/profile.d/mixedtermux.sh
+END
+
+chmod +x \$DISTRO_PATH/etc/profile.d/mixedtermux.sh
 
 ARGS=("proot-distro login \${DISTRO:-alpine}")
 ARGS+=("--termux-home --shared-tmp --fix-low-ports")
 ! [ -z \$ADDITIONAL_ARGS ] && ARGS+=("\$ADDITIONAL_ARGS")
-[ -S $(echo $TMPDIR/pulse-*/native) ] && ARGS+=("--bind $(echo $TMPDIR/pulse-*/native):/var/run/pulse/native")
+[ -S $(echo \$TMPDIR/pulse-*/native) ] && ARGS+=("--bind $(echo \$TMPDIR/pulse-*/native):/var/run/pulse/native")
 ARGS+=("--user \${USER:-"root"} --") 
 
 exec \${ARGS[@]} \$*

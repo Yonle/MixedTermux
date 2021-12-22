@@ -38,7 +38,7 @@ chmod +x \$DISTRO_PATH/etc/profile.d/mixedtermux.sh
 
 ARGS=("proot-distro login \${DISTRO:-alpine}")
 ARGS+=("--termux-home --shared-tmp --fix-low-ports")
-! [ -z \$ADDITIONAL_ARGS ] && ARGS+=("\$ADDITIONAL_ARGS")
+! [ -z "\$ADDITIONAL_ARGS" ] && ARGS+=("\$ADDITIONAL_ARGS")
 [ -S $(echo \$TMPDIR/pulse-*/native) ] && ARGS+=("--bind $(echo \$TMPDIR/pulse-*/native):/var/run/pulse/native")
 ARGS+=("--bind \$(pwd) --user \${USER:-"root"} --") 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-! [ -x ~/.mixedtermuxrc ] && cat <<- EOF > ~/.mixedtermuxrc
+! [ -f ~/.mixedtermuxrc ] && cat <<- EOF > ~/.mixedtermuxrc
 # https://github.com/Yonle/MixedTermux
 # This is a sample MixedTermux configuration file.
 # This configuration file is Bash script. You can put some bash script here.
@@ -20,7 +20,7 @@ EOF
 cat <<- EOF > $PREFIX/libexec/termux/command-not-found
 #!$PREFIX/bin/env bash
 
-[ -x ~/.mixedtermuxrc ] && source ~/.mixedtermuxrc
+[ -f ~/.mixedtermuxrc ] && source ~/.mixedtermuxrc
 ! command -v proot-distro > /dev/null && pkg install -y proot-distro
 ! [ -d $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"} ] && ! [ -z "\$(ls -A $PREFIX/var/lib/proot-distro/installed-rootfs/\${DISTRO:-"alpine"})" ] && proot-distro install \${DISTRO:-"alpine"}
 

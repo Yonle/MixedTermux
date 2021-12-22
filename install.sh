@@ -40,7 +40,7 @@ ARGS=("proot-distro login \${DISTRO:-alpine}")
 ARGS+=("--termux-home --shared-tmp --fix-low-ports")
 ! [ -z \$ADDITIONAL_ARGS ] && ARGS+=("\$ADDITIONAL_ARGS")
 [ -S $(echo \$TMPDIR/pulse-*/native) ] && ARGS+=("--bind $(echo \$TMPDIR/pulse-*/native):/var/run/pulse/native")
-ARGS+=("--user \${USER:-"root"} --") 
+ARGS+=("--bind \$(pwd) --user \${USER:-"root"} --") 
 
 exec \${ARGS[@]} \$*
 EOF

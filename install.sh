@@ -47,4 +47,4 @@ EOF
 
 sed -i "s/command-not-found \"\$1\"/command-not-found \$\*/g" $PREFIX/etc/bash.bashrc
 
-[ -r $PREFIX/share/fish/functions/fish_command_not_found.fish ] && sed -i "s/\$argv\[1\]/\"\$argv\[\@\]\"/g" $PREFIX/share/fish/functions/fish_command_not_found.fish
+[ -r $PREFIX/share/fish/functions/fish_command_not_found.fish ] && sed -i "s/\$argv\[1\]/\"\$argv\"/g" $PREFIX/share/fish/functions/fish_command_not_found.fish

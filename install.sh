@@ -45,7 +45,6 @@ environments=""
 	[ "\$filtered" = 0 ] && environments="\$environments export \$i;"
 done
 
-echo \$environments
 cat <<- END > \$DISTRO_PATH/etc/profile.d/mixedtermux.sh
 #!/usr/bin/env sh
 
